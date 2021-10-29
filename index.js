@@ -27,19 +27,32 @@ async function run() {
           console.log('connect successfully');
           const database = client.db('truism');
           const serviceCollection = database.collection('service');
+          const orderCollection = database.collection('orderService');
 
           // GET api
           app.get('/services', async (req, res) => {
                const cursor = serviceCollection.find({});
                const result = await cursor.toArray();
                console.log(result);
-               res.send(result);
+               res.json(result);
           })
           // GET api for single service
           app.get('/services/:id', async (req, res) => {
                const id = req.params.id;
                const query = { _id: Objectid(id) };
                const result = await serviceCollection.findOne(query);
+               res.json(result);
+          })
+          // POST api
+          app.post('/orderService', async (req, res) => {
+               const service = req.body;
+               const result = await orderCollection.insertOne(service);
+               console.log('post method hit');
+               res.send(result);
+          })
+          app.get('/orderService', async (req, res) => {
+               const cursor = orderCollection.find({});
+               const result = await cursor.toArray();
                res.send(result);
           })
 
