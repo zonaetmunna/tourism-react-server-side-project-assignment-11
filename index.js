@@ -1,6 +1,6 @@
 const express = require('express');
 const { MongoClient } = require('mongodb');
-const Objectid = require('mongodb').ObjectId;
+const ObjectId = require('mongodb').ObjectId;
 require('dotenv').config()
 
 const cors = require('cors');
@@ -29,6 +29,13 @@ async function run() {
           const serviceCollection = database.collection('service');
           const orderCollection = database.collection('orderService');
 
+          // POST api
+          app.post('/services', async (req, res) => {
+               const service = req.body;
+               const result = await serviceCollection.insertOne(service);
+               res.send(result);
+          })
+
           // GET api
           app.get('/services', async (req, res) => {
                const cursor = serviceCollection.find({});
@@ -39,7 +46,7 @@ async function run() {
           // GET api for single service
           app.get('/services/:id', async (req, res) => {
                const id = req.params.id;
-               const query = { _id: Objectid(id) };
+               const query = { _id: ObjectId(id) };
                const result = await serviceCollection.findOne(query);
                res.json(result);
           })
@@ -50,9 +57,17 @@ async function run() {
                console.log('post method hit');
                res.send(result);
           })
+          // GET api
           app.get('/orderService', async (req, res) => {
                const cursor = orderCollection.find({});
                const result = await cursor.toArray();
+               res.json(result);
+          })
+          // DELETE API
+          app.delete('/orderService/:id', async (req, res) => {
+               const id = req.params.id;
+               const query = { _id: ObjectId(id) };
+               const result = await orderCollection.deleteOne(query);
                res.send(result);
           })
 
